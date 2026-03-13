@@ -18,7 +18,18 @@ ex)월요일 18:00 ~ 20:00 동아리 활동 <br>
 
 <hr>
 
-[1주차 게시글 업로드 기능] <br>
+<h3>[1주차 게시글 업로드 기능]</h3> <br>
 프로젝트 이름 : wagi_web <br>
 앱 이름 : post <br>
-조건 : 1. 글(제목, 본문)을 작성하여 올림 <br>
+조건 : <br>
+1. 글(제목, 본문)을 작성하여 올림 <br>
+2. 작성한 글들이 목록으로 뜸 <br>
+3. 목록에서 그 글의 제목을 눌렀을 때, 작성된 글을 볼 수 있음 <br>
+4. formset, serializer 사용 금지 <br>
+힌트 : <br>
+1. 필요한 html은 write.html, list.html, detail.html -> 총 3개 필요 <br>
+2. views.py에 필요한 함수는 write, detail, home(또는 list) -> 총 3개 필요 <br>
+=>html은 ai한테 부탁해서 작성해도 괜찮습니다. 중요한 건 기능!!!
+
+
+
