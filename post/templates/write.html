@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>글 작성</title>
+</head>
+<body>
+    <h1>글 작성</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <p>
+            제목:
+            <input type="text" name="title">
+        </p>
+
+        <p>
+            내용:
+            <textarea name="content"></textarea>
+        </p>
+
+        <button type="submit">작성</button>
+    </form>
+
+    <br>
+    <a href="{% url 'list' %}">목록으로</a>
+</body>
+</html>
