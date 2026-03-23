@@ -13,6 +13,10 @@
     <p>{{ post.content }}</p>
     <p>{{ post.created_at }}</p>
 
+    {% if post.image %}
+        <img src="{{ post.image.url }}" width="300">
+    {% endif %}
+
     <hr>
 
     <a href="{% url 'list' %}">목록으로</a>

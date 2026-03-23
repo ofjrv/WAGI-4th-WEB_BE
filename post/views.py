@@ -16,10 +16,12 @@ def write(request):
     if request.method == 'POST':
         title = request.POST.get('title')
         content = request.POST.get('content')
+        image = request.FILES.get('image')
 
         Post.objects.create(
             title=title,
-            content=content
+            content=content,
+            image=image
         )
 
         return redirect('list')
