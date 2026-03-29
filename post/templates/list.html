@@ -1,0 +1,13 @@
+<h1>글 목록</h1>
+
+<a href="/write/">글 작성</a>
+
+<ul>
+    {% for post in posts %}
+        <il>
+            <a href="/detail/{{ post.id }}/">
+                {{ post.title }}
+            </a>
+        </il>
+        {% endfor %}
+</ul>
