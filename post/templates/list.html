@@ -1,0 +1,10 @@
+<h2>게시글 목록</h2>
+<a href="{% url 'write' %}">글쓰기</a>
+<hr>
+{% for post in posts %}
+    <div>
+        <a href="{% url 'detail' post.id %}"><h3>{{ post.title }}</h3></a>
+        <p>작성일: {{ post.created_at|date:"Y년 m월 d일 A g:i" }}</p>
+    </div>
+    <hr>
+{% endfor %}
