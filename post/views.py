@@ -3,17 +3,19 @@ from .models import Post
 
 # 1. 목록 (Home)
 def home(request):
-    posts = Post.objects.all().order_by('-created_at') # 최신순 정렬
+    posts = Post.objects.all().order_by('-created_at')
     return render(request, 'list.html', {'posts': posts})
 
-# 2. 글 쓰기 (Write)
+# 2. 글 쓰기 (Write) - 이 부분이 에러의 핵심입니다!
 def write(request):
     if request.method == 'POST':
-        # formset 없이 직접 POST 데이터 가져오기
         title = request.POST.get('title')
         content = request.POST.get('content')
-        image = request.FILES.get('image') # 파일은 FILES에서 가져와야 함
         
+        # [수정] image_url 대신 실제 파일(FILES)을 가져옵니다.
+        image = request.FILES.get('image') 
+        
+        # [수정] 데이터베이스의 image 칸에 파일을 저장합니다.
         Post.objects.create(
             title=title,
             content=content,
@@ -27,8 +29,8 @@ def detail(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
     return render(request, 'detail.html', {'post': post})
 
-# + 삭제
+# 4. 삭제
 def delete(request, post_id):
-    post = get_object_or_404(Post, pk=post_id) # 삭제할 글 찾기
-    post.delete() # 데이터베이스에서 삭제
-    return redirect('home') # 삭제 후 목록 페이지로 이동
+    post = get_object_or_404(Post, pk=post_id)
+    post.delete()
+    return redirect('home')
