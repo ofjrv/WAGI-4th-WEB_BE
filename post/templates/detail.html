@@ -1,7 +1,9 @@
 <h1>{{ post.title }}</h1>
-
 <p>{{ post.content}}</p>
 
-{% if post.image %}
-    <img src="{{ post.image.url }}" width="300">
-{% endif %}
+{% for img in post.image_set.all %}
+    <img src="{{ img.image.url }}" width="300">
+{% endfor %}
+
+<br>
+<a href="/update/{{ post.id }}/">수정</a>
