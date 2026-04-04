@@ -21,8 +21,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('main.urls')),
-    path('post/', include('post.urls')), # post 앱의 urls 연결
+    path('', include('post.urls')), # post 앱의 urls 연결
 ]
 
 

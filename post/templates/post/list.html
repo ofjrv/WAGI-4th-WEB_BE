@@ -12,9 +12,7 @@
         <div>
             <h3><a href="{% url 'post:detail' post.pk %}">{{ post.title }}</a></h3>
             <p>{{ post.created_at }}</p>
-            {% if post.image %}
-                <img src="{{ post.image.url }}" width="200">
-            {% endif %}
+            
         </div>
         <hr>
     {% endfor %}
