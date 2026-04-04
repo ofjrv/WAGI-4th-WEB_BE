@@ -8,17 +8,23 @@
     <p>작성일: {{ post.created_at }}</p>
     <hr>
 
-    {% if post.image %}
-        <div style="margin-bottom: 20px;">
-            <img src="{{ post.image.url }}" alt="게시글 이미지" style="max-width: 500px;">
-        </div>
-    {% endif %}
+    <h3>첨부 이미지</h3>
+    <div style="margin-bottom: 20px;">
+        {% for photo in post.images.all %}
+            <div style="margin-bottom: 10px;">
+                <img src="{{ photo.image.url }}" alt="게시글 이미지" style="max-width: 500px;">
+            </div>
+        {% empty %}
+            <p>첨부된 이미지가 없습니다.</p>
+        {% endfor %}
+    </div>
 
     <div style="white-space: pre-wrap;">
         {{ post.content }}
     </div>
 
     <hr>
+    <a href="{% url 'post:update' post.pk %}">수정하기</a> | 
     <a href="{% url 'post:list' %}">목록으로 돌아가기</a>
 </body>
 </html>

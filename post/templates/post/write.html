@@ -9,7 +9,7 @@
         {% csrf_token %}
         <p>제목: <input type="text" name="title"></p>
         <p>내용: <textarea name="content"></textarea></p>
-        <p>이미지: <input type="file" name="image"></p>
+        <p>이미지: <input type="file" name="images" multiple></p>
         <button type="submit">작성하기</button>
     </form>
 </body>
