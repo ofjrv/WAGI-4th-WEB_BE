@@ -1,21 +1,25 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Post
+from .models import Post, Image
 
 # 글 작성
 def write(request):
     if request.method == 'POST':
         title = request.POST.get('title')
         content = request.POST.get('content')
-        image = request.FILES.get('image')
+        images = request.FILES.getlist('image')
 
-        Post.objects.create(
+        post = Post.objects.create(
             title=title,
-            content=content,
-            image=image
+            content=content
         )
+
+        for img in images:
+            Image.objects.create(post=post, image=img)
+
         return redirect('home')
 
     return render(request, 'write.html')
+
 
 
 # 글 목록
@@ -28,3 +32,15 @@ def home(request):
 def detail(request, id):
     post = get_object_or_404(Post, id=id)
     return render(request, 'detail.html', {'post': post})
+
+#글 수정
+def update(request, id):
+    post = get_object_or_404(Post, id=id)
+
+    if request.method == 'POST':
+        post.title = request.POST.get('title')
+        post.content = request.POST.get('content')
+        post.save()
+        return redirect('detail', id=post.id)
+
+    return render(request, 'update.html', {'post': post})
