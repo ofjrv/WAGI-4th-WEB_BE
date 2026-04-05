@@ -1,19 +1,93 @@
-<h2>{{ post.title }}</h2>
-<p>작성일: {{ post.created_at|date:"Y년 m월 d일 A g:i" }}</p> 
-<hr>
+<style>
+    /* 기존 스타일 유지 */
+    .container {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-family: sans-serif;
+    }
+    .post-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #333;
+    }
+    .post-date {
+        color: #888;
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+    /* 수정됨 텍스트 강조 스타일 */
+    .updated-label {
+        color: #888;
+        margin-left: 5px;
+    }
+    .post-content {
+        line-height: 1.6;
+        color: #444;
+        margin: 25px 0;
+        white-space: pre-wrap;
+    }
+    .image-container img {
+        display: block;
+        width: auto;
+        max-width: 100%;
+        max-height: 500px;
+        margin: 0 auto 20px auto; 
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        object-fit: contain;
+    }
+    .button-group {
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+        display: flex;
+        gap: 10px;
+    }
+    .btn {
+        padding: 8px 15px;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: bold;
+    }
+    .btn-list { background-color: #6c757d; color: white; }
+    .btn-edit { background-color: #007bff; color: white; }
+    .btn-delete { background-color: #dc3545; color: white; }
+    .btn:hover { opacity: 0.8; }
+</style>
 
-{% if post.image %}
-    <div style="margin-bottom: 20px;">
-        <img src="{{ post.image.url }}" alt="post_image" style="max-width: 400px;">
+<div class="container">
+    <div class="post-title">{{ post.title }}</div>
+    
+    <div class="post-date">
+        <span>작성일: {{ post.created_at|date:"Y.m.d H:i" }}</span>
+        
+        {% if post.created_at|date:"YmdHi" != post.updated_at|date:"YmdHi" %}
+            <span class="updated-label">| 수정됨: {{ post.updated_at|date:"Y.m.d H:i" }}</span>
+        {% endif %}
     </div>
-{% endif %}
+    
+    <hr>
 
-<div class="content" style="margin: 20px 0;">
-    <p>{{ post.content|linebreaks }}</p>
+    <div class="image-container">
+        {% for img_obj in post.images.all %}
+            <img src="{{ img_obj.image.url }}" alt="업로드 이미지">
+        {% empty %}
+            <p style="color: #999; text-align: center;">첨부된 이미지가 없습니다.</p>
+        {% endfor %}
+    </div>
+
+    <div class="post-content">
+        {{ post.content|linebreaks }}
+    </div>
+
+    <div class="button-group">
+        <a href="{% url 'home' %}" class="btn btn-list">목록으로</a>
+        <a href="{% url 'update' post.id %}" class="btn btn-edit">수정하기</a>
+        <a href="{% url 'delete' post.id %}" class="btn btn-delete" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</a>
+    </div>
 </div>
-
-<hr>
-
-<a href="{% url 'delete' post.id %}" onclick="return confirm('정말 삭제하시겠습니까?');" style="color: red;">삭제하기</a>
-|
-<a href="{% url 'home' %}">목록으로 돌아가기</a>

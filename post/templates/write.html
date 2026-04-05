@@ -1,9 +1,50 @@
-<h2>새 글 작성</h2>
+<style>
+    /* 수정창과 동일한 스타일 적용 */
+    form input[type="text"], form textarea, form input[type="file"] {
+        display: block;
+        width: 100%;
+        max-width: 500px;
+        margin-bottom: 15px;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+    textarea {
+        height: 200px;
+    }
+    .btn-submit {
+        padding: 10px 20px;
+        background-color: #28a745; /* 작성 버튼은 초록색으로 구분 */
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    .btn-submit:hover {
+        background-color: #218838;
+    }
+    label {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+    }
+</style>
+
+<h2>새 게시글 작성하기</h2>
+
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    <input type="text" name="title" placeholder="제목을 입력하세요" required><br><br>
-    <textarea name="content" placeholder="내용을 입력하세요" required></textarea><br><br>
-    <input type="file" name="image"><br><br>
-    <button type="submit">업로드</button>
+    
+    <label for="title">제목</label>
+    <input type="text" id="title" name="title" placeholder="제목을 입력하세요" required>
+    
+    <label for="content">내용</label>
+    <textarea id="content" name="content" placeholder="내용을 상세히 입력해 주세요" required></textarea>
+    
+    <label for="images">이미지 첨부 (여러 장 선택 가능)</label>
+    <input type="file" id="images" name="images" multiple>
+    
+    <button type="submit" class="btn-submit">업로드 하기</button>
 </form>
-<a href="{% url 'home' %}">취소</a>
+
+<hr>
+<a href="{% url 'home' %}">목록으로 돌아가기</a>
