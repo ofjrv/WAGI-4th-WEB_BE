@@ -27,3 +27,4 @@ ENV/
 # static files
 staticfiles/
 media/
+images/
