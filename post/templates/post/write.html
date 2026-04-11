@@ -1,16 +1,91 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
+    <meta charset="UTF-8">
     <title>글쓰기</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+
+        body {
+            margin: 0; padding: 0; font-family: 'Inter', sans-serif; min-height: 100vh;
+            /* 배경 무한 반복으로 하단 빈 공간 방지 */
+            background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url("{% static 'kiikii.jpg' %}");
+            background-size: auto 100vh; background-repeat: repeat; background-position: center top; background-attachment: fixed;
+            display: flex; justify-content: center; align-items: flex-start;
+        }
+
+        .write-container {
+            width: 500px; margin: 60px 20px; background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border-radius: 35px; padding: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            box-sizing: border-box;
+        }
+
+        h1 { font-size: 2.5rem; font-weight: 900; color: #000; margin-bottom: 30px; letter-spacing: -1.5px; text-align: center; }
+
+        /* 혜량이가 짠 입력 폼 스타일링 */
+        form p {
+            margin-bottom: 20px;
+            font-weight: 700;
+            color: #1d1d1f;
+        }
+
+        input[type="text"], textarea {
+            width: 100%; padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.5);
+            background: rgba(255,255,255,0.8); box-sizing: border-box; 
+            font-size: 1rem; font-weight: 600; outline: none; transition: 0.2s;
+            margin-top: 8px; font-family: 'Inter', sans-serif;
+        }
+
+        textarea { height: 200px; resize: none; }
+
+        input[type="text"]:focus, textarea:focus {
+            border-color: #ff1493;
+            background: #fff;
+        }
+
+        /* 파일 선택 버튼 스타일 */
+        input[type="file"] {
+            display: block; margin-top: 10px; font-size: 0.85rem; color: #555;
+        }
+
+        button {
+            width: 100%; padding: 15px; border-radius: 15px; border: none; 
+            background: #1d1d1f; color: #fff; font-weight: 800; font-size: 1rem;
+            cursor: pointer; transition: 0.3s; margin-top: 20px;
+        }
+
+        button:hover {
+            background: #ff1493;
+            transform: scale(1.03);
+            box-shadow: 0 5px 15px rgba(255, 20, 147, 0.3);
+        }
+
+        .back-link {
+            display: block; text-align: center; margin-top: 20px;
+            color: #555; text-decoration: none; font-weight: 600; font-size: 0.9rem;
+        }
+        .back-link:hover { color: #ff1493; }
+    </style>
+    
 </head>
 <body>
-    <h1>새 글 작성하기</h1>
-    <form action="" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <p>제목: <input type="text" name="title"></p>
-        <p>내용: <textarea name="content"></textarea></p>
-        <p>이미지: <input type="file" name="images" multiple></p>
-        <button type="submit">작성하기</button>
-    </form>
+
+    <div class="write-container">
+        <h1>새 글 작성하기</h1>
+
+        <form action="" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <p>제목 <input type="text" name="title" placeholder="제목을 입력하세요"></p>
+            <p>내용 <textarea name="content" placeholder="내용을 입력하세요"></textarea></p>
+            <p>이미지 <input type="file" name="images" multiple></p>
+            
+            <button type="submit">작성하기</button>
+        </form>
+
+        <a href="{% url 'post:list' %}" class="back-link">취소하고 돌아가기</a>
+    </div>
+
 </body>
 </html>

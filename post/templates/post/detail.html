@@ -1,30 +1,91 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
+    <meta charset="UTF-8">
     <title>{{ post.title }} - 상세보기</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+
+        body {
+            margin: 0; padding: 0; font-family: 'Inter', sans-serif; min-height: 100vh;
+            /* 배경 무한 반복으로 하단 빈 공간 방지 */
+            background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url("{% static 'kiikii.jpg' %}");
+            background-size: auto 100vh; background-repeat: repeat; background-position: center top; background-attachment: fixed;
+            display: flex; justify-content: center; align-items: flex-start;
+        }
+
+        .detail-container {
+            width: 550px; margin: 60px 20px; background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border-radius: 35px; padding: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            box-sizing: border-box;
+        }
+
+        .meta-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .author-badge { background: #ff1493; color: #fff; padding: 5px 15px; border-radius: 20px; font-weight: 800; font-size: 0.8rem; }
+        .date-info { color: #555; font-size: 0.85rem; font-weight: 700; }
+
+        h1 { font-size: 2.2rem; font-weight: 900; color: #000; margin: 10px 0 25px 0; line-height: 1.2; letter-spacing: -1px; }
+
+        .image-section { margin-bottom: 25px; text-align: center; }
+        .image-section img { 
+            width: 100%; max-width: 100%; border-radius: 20px; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1); margin-bottom: 15px; 
+        }
+
+        .content-box {
+            background: rgba(255, 255, 255, 0.75); padding: 30px; border-radius: 25px;
+            min-height: 150px; line-height: 1.7; color: #1a1a1a; font-size: 1.05rem;
+            margin-bottom: 30px; border: 1px solid rgba(255,255,255,0.4);
+            white-space: pre-wrap; /* 혜량이가 쓴 속성 유지 */
+        }
+
+        hr { border: none; border-top: 1px solid rgba(0,0,0,0.1); margin: 30px 0; }
+
+        .action-links { display: flex; justify-content: center; gap: 15px; }
+        .btn {
+            display: inline-block; padding: 12px 20px; border-radius: 15px; 
+            text-decoration: none; font-weight: 700; font-size: 0.9rem; transition: 0.3s;
+        }
+        .btn-black { background: #1d1d1f; color: #fff; }
+        .btn-pink { background: #ff1493; color: #fff; }
+        
+        .btn:hover { transform: scale(1.05); opacity: 0.9; }
+    </style>
 </head>
 <body>
-    <h1>{{ post.title }}</h1>
-    <p>작성일: {{ post.created_at }}</p>
-    <hr>
 
-    <h3>첨부 이미지</h3>
-    <div style="margin-bottom: 20px;">
-        {% for photo in post.images.all %}
-            <div style="margin-bottom: 10px;">
-                <img src="{{ photo.image.url }}" alt="게시글 이미지" style="max-width: 500px;">
-            </div>
-        {% empty %}
-            <p>첨부된 이미지가 없습니다.</p>
-        {% endfor %}
+    <div class="detail-container">
+        <div class="meta-info">
+            <span class="author-badge">{{ post.author.username }}</span>
+            <span class="date-info">{{ post.created_at|date:"M d, Y" }}</span>
+        </div>
+
+        <h1>{{ post.title }}</h1>
+
+        <div class="image-section">
+            {% for photo in post.images.all %}
+                <img src="{{ photo.image.url }}" alt="게시글 이미지">
+            {% empty %}
+                <p style="color: #666; font-size: 0.9rem;">첨부된 이미지가 없습니다.</p>
+            {% endfor %}
+        </div>
+
+        <div class="content-box">
+            {{ post.content }}
+        </div>
+
+        <hr>
+
+        <div class="action-links">
+            {% if post.author == user %}
+                <a href="{% url 'post:update' post.pk %}" class="btn btn-pink">수정하기</a>
+            {% endif %}
+            
+            <a href="{% url 'post:list' %}" class="btn btn-black">목록으로 돌아가기</a>
+        </div>
     </div>
 
-    <div style="white-space: pre-wrap;">
-        {{ post.content }}
-    </div>
-
-    <hr>
-    <a href="{% url 'post:update' post.pk %}">수정하기</a> | 
-    <a href="{% url 'post:list' %}">목록으로 돌아가기</a>
 </body>
 </html>
