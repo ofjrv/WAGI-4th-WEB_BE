@@ -1,50 +1,128 @@
 <style>
-    /* 수정창과 동일한 스타일 적용 */
-    form input[type="text"], form textarea, form input[type="file"] {
+    .container {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    }
+    
+    /* 입력창 스타일 */
+    form input[type="text"], form textarea {
         display: block;
         width: 100%;
-        max-width: 500px;
-        margin-bottom: 15px;
-        padding: 10px;
+        margin-bottom: 20px;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
         box-sizing: border-box;
+        font-size: 15px;
     }
+    
     textarea {
-        height: 200px;
+        height: 250px;
+        resize: vertical;
     }
-    .btn-submit {
-        padding: 10px 20px;
-        background-color: #28a745; /* 작성 버튼은 초록색으로 구분 */
+
+    /* [수정] 사진 업로드 버튼 커스텀 */
+    .file-input-group {
+        margin-bottom: 25px;
+    }
+    
+    #images {
+        display: none; /* 실제 파일 선택창은 숨김 */
+    }
+
+    .btn-file {
+        display: inline-block;
+        padding: 10px 18px;
+        background-color: #6c757d; /* 차분한 회색으로 구분 */
         color: white;
-        border: none;
+        border-radius: 5px;
         cursor: pointer;
         font-weight: bold;
+        font-size: 14px;
+        transition: background 0.3s;
     }
+
+    .btn-file:hover {
+        background-color: #5a6268;
+    }
+
+    /* 업로드 하기 버튼 (리스트와 동일한 초록색) */
+    .btn-submit {
+        display: block;
+        width: 100%;
+        padding: 14px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 16px;
+        margin-top: 10px;
+    }
+
     .btn-submit:hover {
         background-color: #218838;
     }
+
     label {
         font-weight: bold;
         display: block;
-        margin-bottom: 5px;
+        margin-bottom: 8px;
+        color: #333;
+    }
+
+    #file-name {
+        margin-left: 10px;
+        font-size: 13px;
+        color: #666;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-top: 20px;
+        color: #007bff;
+        text-decoration: none;
     }
 </style>
 
-<h2>새 게시글 작성하기</h2>
+<div class="container">
+    <h2>새 게시글 작성하기</h2>
 
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    
-    <label for="title">제목</label>
-    <input type="text" id="title" name="title" placeholder="제목을 입력하세요" required>
-    
-    <label for="content">내용</label>
-    <textarea id="content" name="content" placeholder="내용을 상세히 입력해 주세요" required></textarea>
-    
-    <label for="images">이미지 첨부 (여러 장 선택 가능)</label>
-    <input type="file" id="images" name="images" multiple>
-    
-    <button type="submit" class="btn-submit">업로드 하기</button>
-</form>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <label for="title">제목</label>
+        <input type="text" id="title" name="title" placeholder="제목을 입력하세요" required>
+        
+        <label for="content">내용</label>
+        <textarea id="content" name="content" placeholder="내용을 상세히 입력해 주세요" required></textarea>
+        
+        <label>이미지 첨부 (여러 장 선택 가능)</label>
+        <div class="file-input-group">
+            <label for="images" class="btn-file">사진 선택하기</label>
+            <input type="file" id="images" name="images" multiple accept="image/*">
+            <span id="file-name">선택된 사진 없음</span>
+        </div>
+        
+        <button type="submit" class="btn-submit">업로드 하기</button>
+    </form>
 
-<hr>
-<a href="{% url 'home' %}">목록으로 돌아가기</a>
+    <hr>
+    <a href="{% url 'home' %}" class="back-link">목록으로 돌아가기</a>
+</div>
+
+<script>
+    document.getElementById('images').addEventListener('change', function(e) {
+        const files = e.target.files;
+        const nameDisplay = document.getElementById('file-name');
+        
+        if (files.length > 0) {
+            nameDisplay.innerText = files.length + "개의 파일이 선택되었습니다.";
+        } else {
+            nameDisplay.innerText = "선택된 사진 없음";
+        }
+    });
+</script>

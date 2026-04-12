@@ -19,7 +19,6 @@
         font-size: 14px;
         margin-bottom: 20px;
     }
-    /* 수정됨 텍스트 강조 스타일 */
     .updated-label {
         color: #888;
         margin-left: 5px;
@@ -64,6 +63,7 @@
     <div class="post-title">{{ post.title }}</div>
     
     <div class="post-date">
+        <strong>작성자: {{ post.author.username }}</strong> | 
         <span>작성일: {{ post.created_at|date:"Y.m.d H:i" }}</span>
         
         {% if post.created_at|date:"YmdHi" != post.updated_at|date:"YmdHi" %}
@@ -87,7 +87,10 @@
 
     <div class="button-group">
         <a href="{% url 'home' %}" class="btn btn-list">목록으로</a>
-        <a href="{% url 'update' post.id %}" class="btn btn-edit">수정하기</a>
-        <a href="{% url 'delete' post.id %}" class="btn btn-delete" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</a>
+        
+        {% if user.is_authenticated and user == post.author %}
+            <a href="{% url 'update' post.id %}" class="btn btn-edit">수정하기</a>
+            <a href="{% url 'delete' post.id %}" class="btn btn-delete" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</a>
+        {% endif %}
     </div>
 </div>

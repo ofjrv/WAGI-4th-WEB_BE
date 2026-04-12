@@ -1,24 +1,33 @@
 from django.db import models
+from django.conf import settings  # 유저 모델 참조를 위해 필요
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 import os
 
 class Post(models.Model):
+    # [4주차 핵심] 유저 모델과 1:N 관계 설정
+    # 유저가 삭제되면 해당 유저의 글도 삭제되도록 CASCADE 설정
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='posts'
+    )
     title = models.CharField(max_length=200)
     content = models.TextField()
-    # [추가] auto_now_add는 생성 시에만, auto_now는 수정 시마다 기록됩니다.
+    
+    # 시간 기록 필드
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True) 
 
     def __str__(self):
         return self.title
 
-# [핵심] 여러 이미지를 저장하기 위한 모델 (1:N 관계)
+# 여러 이미지를 저장하기 위한 모델 (Post와 N:1 관계)
 class PostImage(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to='posts/', blank=True, null=True)
 
-# [수정] PostImage가 삭제될 때 실제 파일도 삭제되도록 설정
+# PostImage 삭제 시 실제 파일도 서버에서 삭제하는 로직
 @receiver(post_delete, sender=PostImage)
 def post_image_delete(sender, instance, **kwargs):
     if instance.image:

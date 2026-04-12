@@ -1,0 +1,66 @@
+<style>
+    .auth-container {
+        max-width: 400px;
+        margin: 50px auto;
+        padding: 30px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-family: sans-serif;
+    }
+    .auth-title {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    /* 장고 기본 폼 스타일링 */
+    .auth-form p {
+        margin-bottom: 15px;
+    }
+    .auth-form input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    .helptext {
+        display: block;
+        font-size: 11px;
+        color: #888;
+        margin-top: 5px;
+    }
+    .btn-auth {
+        width: 100%;
+        padding: 12px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    .auth-link {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+        font-size: 14px;
+        color: #666;
+        text-decoration: none;
+    }
+</style>
+
+<div class="auth-container">
+    <div class="auth-title">회원가입</div>
+    
+    <form method="POST" class="auth-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn-auth">가입하기</button>
+    </form>
+    
+    <a href="{% url 'login' %}" class="auth-link">이미 계정이 있으신가요? 로그인</a>
+    <a href="{% url 'home' %}" class="auth-link" style="font-size: 12px;">홈으로 돌아가기</a>
+</div>
