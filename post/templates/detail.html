@@ -2,7 +2,7 @@
 
 <p>{{ post.content }}</p>
 
-{% for img in post.image_set.all %}
+{% for img in post.image.all %}
     <img src="{{ img.image.url }}" width="300"><br>
 {% endfor %}
 

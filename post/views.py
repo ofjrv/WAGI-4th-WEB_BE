@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Post, Image
+from .models import Post, PostImage
 
 # 글 작성
 def write(request):
     if request.method == 'POST':
         title = request.POST.get('title')
         content = request.POST.get('content')
-        images = request.FILES.getlist('image')
+        images = request.FILES.getlist('images')
 
         post = Post.objects.create(
             title=title,
@@ -14,7 +14,7 @@ def write(request):
         )
 
         for img in images:
-            Image.objects.create(post=post, image=img)
+            PostImage.objects.create(post=post, image=img)
 
         return redirect('home')
 
