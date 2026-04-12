@@ -1,13 +1,18 @@
-<h1>글 목록</h1>
+{% extends 'base.html' %}
 
-<a href="{% url 'write' %}">글쓰기</a>
+{% block content %}
 
-<ul>
+<h2>글 목록</h2>
+
+<hr>
+
 {% for post in posts %}
-    <li>
-        <a href="{% url 'detail' post.id %}">
-            {{ post.title }}
-        </a>
-    </li>
+    <div>
+        <a href="{% url 'detail' post.pk %}">{{ post.title }}</a><br>
+        <small>작성자: {{ post.author.username }}</small><br>
+        <small>작성일: {{ post.created_at }}</small>
+    </div>
+    <hr>
 {% endfor %}
-</ul>
+
+{% endblock %}

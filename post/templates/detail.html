@@ -1,11 +1,22 @@
-<h1>{{ post.title }}</h1>
+{% extends 'base.html' %}
 
+{% block content %}
+
+<h1>{{ post.title }}</h1>
 <p>{{ post.content }}</p>
 
-{% for img in post.image.all %}
+<hr>
+
+<!-- 이미지 출력 -->
+{% for img in post.images.all %}
     <img src="{{ img.image.url }}" width="300"><br>
 {% endfor %}
 
-<br><br>
-<a href="/">목록으로</a>
-<a href="{% url 'update' post.id %}">수정</a>
+<hr>
+
+<!-- 작성자만 수정 가능 -->
+{% if request.user == post.author %}
+    <a href="{% url 'update' post.pk %}">수정</a>
+{% endif %}
+
+{% endblock %}
