@@ -1,5 +1,15 @@
-venv/
+# Django 관련 설정
+db.sqlite3
 __pycache__/
 *.pyc
-db.sqlite3
+
+# 미디어 및 스태틱 파일
 media/
+static/
+
+# 마이그레이션 (__init__.py 제외)
+*/migrations/*.py
+!*/migrations/__init__.py
+
+# 가상환경
+venv/
