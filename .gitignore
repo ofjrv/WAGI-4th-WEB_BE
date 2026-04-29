@@ -7,9 +7,10 @@ __pycache__/
 media/
 static/
 
-# 마이그레이션 (__init__.py 제외)
+# 마이그레이션
 */migrations/*.py
 !*/migrations/__init__.py
+
 
 # 가상환경
 venv/
