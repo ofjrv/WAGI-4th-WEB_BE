@@ -1,57 +1,79 @@
 <style>
-    /* 가입 페이지와 동일한 .auth-container, .auth-title 등 스타일 사용 */
+    body { background-color: #f8f9fa; }
+    .auth-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+    }
     .auth-container {
-        max-width: 400px;
-        margin: 50px auto;
-        padding: 30px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        font-family: sans-serif;
+        width: 100%;
+        max-width: 380px;
+        padding: 40px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        box-sizing: border-box;
     }
     .auth-title {
-        font-size: 20px;
-        font-weight: bold;
-        margin-bottom: 20px;
+        font-size: 24px;
+        font-weight: 800;
+        margin-bottom: 30px;
         text-align: center;
+        color: #1a1a1a;
     }
     .auth-form input {
         width: 100%;
-        padding: 10px;
-        margin: 10px 0;
-        border: 1px solid #ccc;
-        border-radius: 4px;
+        padding: 14px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
         box-sizing: border-box;
+        font-size: 15px;
+        outline: none;
     }
+    .auth-form input:focus { border-color: #007bff; }
     .btn-login {
         width: 100%;
-        padding: 12px;
-        background-color: #007bff;
+        padding: 14px;
+        background-color: #1a1a1a;
         color: white;
         border: none;
-        border-radius: 4px;
+        border-radius: 8px;
         font-weight: bold;
+        font-size: 16px;
         cursor: pointer;
+        margin-top: 10px;
     }
-    .auth-link {
-        display: block;
+    .auth-link-group {
+        margin-top: 25px;
         text-align: center;
-        margin-top: 20px;
         font-size: 14px;
         color: #666;
+    }
+    .auth-link {
+        color: #007bff;
         text-decoration: none;
+        margin-left: 5px;
     }
 </style>
 
-<div class="auth-container">
-    <div class="auth-title">로그인</div>
-    
-    <form method="POST">
-        {% csrf_token %}
-        <input type="text" name="username" placeholder="아이디" required autofocus>
-        <input type="password" name="password" placeholder="비밀번호" required>
-        <button type="submit" class="btn-login">로그인</button>
-    </form>
-    
-    <a href="{% url 'signup' %}" class="auth-link">아직 계정이 없으신가요? 회원가입</a>
-    <a href="{% url 'home' %}" class="auth-link" style="font-size: 12px;">홈으로 돌아가기</a>
+<div class="auth-wrapper">
+    <div class="auth-container">
+        <div class="auth-title">로그인</div>
+        
+        <form method="POST" class="auth-form">
+            {% csrf_token %}
+            <input type="text" name="username" placeholder="아이디" required autofocus>
+            <input type="password" name="password" placeholder="비밀번호" required>
+            <button type="submit" class="btn-login">로그인</button>
+        </form>
+        
+        <div class="auth-link-group">
+            아직 계정이 없으신가요? <a href="{% url 'signup' %}" class="auth-link">회원가입</a>
+        </div>
+        <div style="text-align: center; margin-top: 15px;">
+            <a href="{% url 'home' %}" style="font-size: 12px; color: #999; text-decoration: none;">홈으로 돌아가기</a>
+        </div>
+    </div>
 </div>
