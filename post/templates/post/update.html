@@ -24,7 +24,7 @@
 
         h1 { font-size: 2.5rem; font-weight: 900; color: #000; margin-bottom: 30px; letter-spacing: -1.5px; text-align: center; }
 
-        /* 혜량이가 짠 수정 폼 스타일링 */
+        
         form { display: flex; flex-direction: column; gap: 15px; }
 
         .label-text { font-weight: 700; color: #1d1d1f; margin-left: 5px; margin-bottom: -5px; display: block; }
@@ -68,19 +68,40 @@
     <div class="update-container">
         <h1>글 수정하기</h1>
 
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <div>
-                <span class="label-text">제목</span>
-                <input type="text" name="title" value="{{ post.title }}">
+
+            {{ post_form.as_p }}
+
+            <hr>
+
+            <div class="image-edit-section">
+                <h3>🖼 현재 등록된 사진 관리</h3>
+                <p style="font-size: 0.8rem; color: #888;">삭제하고 싶은 사진을 체크하세요.</p>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    {% for photo in post.images.all %}
+                        <div style="text-align: center; border: 1px solid #ddd; padding: 10px; border-radius: 8px;">
+                            <img src="{{ photo.image.url }}" width="120" style="border-radius: 5px; display: block; margin-bottom: 5px;">
+                            <label style="font-size: 0.9rem; cursor: pointer;">
+                                <input type="checkbox" name="delete_images" value="{{ photo.id }}"> 삭제
+                            </label>
+                        </div>
+                    {% empty %}
+                        <p>등록된 사진이 없습니다.</p>
+                    {% endfor %}
+                </div>
             </div>
-            
-            <div>
-                <span class="label-text">내용</span>
-                <textarea name="content">{{ post.content }}</textarea>
+
+            <hr>
+
+            <div class="new-image-section" style="margin-top: 20px;">
+                <h3>➕ 새 사진 추가하기</h3>
+                <input type="file" name="new_images" multiple>
             </div>
-            
-            <button type="submit">수정 완료</button>
+
+            <div style="margin-top: 30px;">
+                <button type="submit">수정 완료하기</button>
+            </div>
         </form>
 
         <a href="{% url 'post:detail' post.pk %}" class="cancel-link">수정 취소하고 돌아가기</a>

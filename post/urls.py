@@ -11,4 +11,6 @@ urlpatterns = [
     path('update/<int:pk>/', views.update, name='update'),
     path('accounts/login/', auth_views.LoginView.as_view(template_name='accounts/login.html'), name='login'),
     path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('detail/<int:pk>/comment/', views.comment_create, name='comment_create'),
+    path('<int:pk>/like/', views.post_like, name='post_like'),
 ]
