@@ -1,13 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Post, PostImage
+from .models import Post, PostImage, Comment
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.decorators import login_required
+
 
 # 글 작성
+@login_required(login_url='login')
 def write(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
-
     if request.method == 'POST':
         title = request.POST.get('title')
         content = request.POST.get('content')
@@ -27,7 +27,6 @@ def write(request):
     return render(request, 'write.html')
 
 
-
 # 글 목록
 def home(request):
     posts = Post.objects.all()
@@ -35,19 +34,35 @@ def home(request):
 
 
 # 글 상세
-def detail(request, id):
-    post = get_object_or_404(Post, id=id)
+def detail(request, pk):
+    post = get_object_or_404(Post, pk=pk)
     return render(request, 'detail.html', {'post': post})
 
 #글 수정
+@login_required(login_url='login')
 def update(request, pk):
-    post = Post.objects.get(pk=pk)
+    post = get_object_or_404(Post, pk=pk)
+
+    if request.user != post.author:
+        return redirect('home')
 
     if request.method == 'POST':
         post.title = request.POST.get('title')
         post.content = request.POST.get('content')
         post.save()
-        return redirect('detail', id=post.id)
+
+        # 기존 이미지 삭제
+        delete_image_ids = request.POST.getlist('delete_images')
+        for img_id in delete_image_ids:
+            image = get_object_or_404(PostImage, pk=img_id)
+            image.delete()
+
+        # 새로운 이미지 추가
+        images = request.FILES.getlist('images')
+        for img in images:
+            PostImage.objects.create(post=post, image=img)
+
+        return redirect('detail', pk=post.pk)
 
     return render(request, 'update.html', {'post': post})
 
@@ -91,54 +106,22 @@ def user_logout(request):
     return redirect('home')
 
 
-# 글 작성
-def write(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
+# 좋아요
+@login_required(login_url='login')
+def like_post(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.user in post.likes.all():
+        post.likes.remove(request.user)
+    else:
+        post.likes.add(request.user)
+    return redirect('detail', pk=pk)
 
+# 댓글
+@login_required(login_url='login')
+def add_comment(request, pk):
     if request.method == 'POST':
-        title = request.POST.get('title')
+        post = get_object_or_404(Post, pk=pk)
         content = request.POST.get('content')
-        images = request.FILES.getlist('images')
-
-        post = Post.objects.create(
-            author=request.user,
-            title=title,
-            content=content
-        )
-
-        for img in images:
-            PostImage.objects.create(post=post, image=img)
-
-        return redirect('home')
-
-    return render(request, 'write.html')
-
-
-# 글 목록
-def home(request):
-    posts = Post.objects.all()
-    return render(request, 'list.html', {'posts': posts})
-
-
-# 글 상세
-def detail(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    return render(request, 'detail.html', {'post': post})
-
-
-# 글 수정
-def update(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-
-    # 작성자만 수정 가능
-    if request.user != post.author:
-        return redirect('home')
-
-    if request.method == 'POST':
-        post.title = request.POST.get('title')
-        post.content = request.POST.get('content')
-        post.save()
-        return redirect('detail', pk=post.pk)
-
-    return render(request, 'update.html', {'post': post})
+        if content:
+            Comment.objects.create(post=post, author=request.user, content=content)
+    return redirect('detail', pk=pk)

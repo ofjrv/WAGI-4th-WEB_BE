@@ -9,6 +9,10 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
+# 기존 설정을 이렇게 변경하세요
+LANGUAGE_CODE = 'ko-kr'   # 에러 메시지나 날짜 형식을 한국어로
+TIME_ZONE = 'Asia/Seoul'  # 시간대를 서울(한국)로 설정
+USE_TZ = False            # DB에 한국 시간을 직접 저장 (가장 직관적인 방법)
 
 from pathlib import Path
 
@@ -103,13 +107,12 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ko-kr'
 
-TIME_ZONE = 'UTC'
-
+TIME_ZONE = 'Asia/Seoul'
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
