@@ -7,3 +7,38 @@
 
 <br>
 <a href="/update/{{ post.id }}/">수정</a>
+
+<hr>
+
+<form method="POST" action="{% url 'like_post' post.id %}">
+    {% csrf_token %}
+
+    <button type="submit">
+        좋아요 {{ post.likes.count }}
+    </button>
+</form>
+
+<hr>
+
+<h3>댓글</h3>
+
+{% for comment in post.comment_set.all %}
+    <p>
+        <strong>{{ comment.author.username }}</strong>
+        : {{comment.content}}
+    </p>
+{% empty %}
+    <p>댓글이 없습니다.</p>
+{% endfor %}
+
+<hr>
+
+<form method="POST" action="{% url 'create_comment' post.id %}">
+    {% csrf_token %}
+
+    <textarea name="content"></textarea>
+
+    <button type="submit">
+        댓글 작성
+    </button>
+</form>

@@ -1,10 +1,31 @@
 <h1>글 수정</h1>
 
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
 
-    <input type="text" name="title" value="{{ post.title }}"><br><br>
-    <textarea name="content">{{ post.content }}</textarea><br><br>
+    <input type="text" name="title" value="{{ post.title }}">
+    <br><br>
+    <textarea name="content">{{ post.content }}</textarea>
+    <br><br>
+
+    <h3>기존 사진</h3>
+
+    {% for img in post.image_set.all %}
+        <img src="{{ img.image.url}}" width="200">
+
+        <label>
+            삭제
+            <input type="checkbox" name="delete_images" value="{{ img.id }}">
+        </label>
+
+        <br><br>
+    {% endfor %}
+
+    <h3>새 사진 추가</h3>
+
+    <input type="file" name="new_images" multiple>
+
+    <br><br>
 
     <button type="submit">수정</button>
 </form>
