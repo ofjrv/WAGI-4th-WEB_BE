@@ -14,7 +14,7 @@
     {% csrf_token %}
 
     <button type="submit">
-        좋아요 {{ post.likes.count }}
+        👍 {{ post.likes.count }}
     </button>
 </form>
 
@@ -22,23 +22,43 @@
 
 <h3>댓글</h3>
 
-{% for comment in post.comment_set.all %}
+{% for comment in comments %}
     <p>
         <strong>{{ comment.author.username }}</strong>
         : {{comment.content}}
     </p>
-{% empty %}
-    <p>댓글이 없습니다.</p>
+    
+    <form method="POST" action="{% url 'comment_like' comment.id %}">
+        {% csrf_token %}
+        <button type="submit">
+            👍 {{ comment.commentlike_set.count }}
+        </button>
+    </form>
+
+    {% for reply in comment.replies.all %}
+        <div style="margin-left:30px;">
+            <strong>{{ reply.author.username }}</strong>
+            : {{ reply.content }}
+
+            <form method="POST" action="{% url 'comment_like' reply.id %}">
+                {% csrf_token %}
+                <button type="submit">
+                    👍 {{ reply.commentlike_set.count }}
+                </button>
+            </form>
+        </div>
+    {% endfor %}
+
+    <form method="POST" action="{% url 'create_comment' post.id %}">
+        {% csrf_token %}
+
+        <input type="hidden" name="parent_id" value="{{ comment.id }}">
+
+        <textarea name="content"></textarea>
+
+        <button type="submit">
+            대댓글 작성
+        </button>
+    </form>
 {% endfor %}
 
-<hr>
-
-<form method="POST" action="{% url 'create_comment' post.id %}">
-    {% csrf_token %}
-
-    <textarea name="content"></textarea>
-
-    <button type="submit">
-        댓글 작성
-    </button>
-</form>
