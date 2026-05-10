@@ -2,6 +2,11 @@
 
 {% block content %}
 
+<form action="{% url 'home' %}" method="GET">
+    <input type="text" name="search" value="{{ search_query|default:'' }}">
+    <button type="submit">검색</button>
+</form>
+
 <h2>글 목록</h2>
 
 <hr>

@@ -29,8 +29,11 @@ def write(request):
 
 # 글 목록
 def home(request):
-    posts = Post.objects.all()
-    return render(request, 'list.html', {'posts': posts})
+    posts = Post.objects.all().order_by('-created_at')
+    search_query = request.GET.get('search', '') #GET 방식
+    if search_query:
+        posts = posts.filter(title__icontains=search_query)
+    return render(request, 'list.html', {'posts': posts, 'search_query': search_query})
 
 
 # 글 상세
@@ -38,7 +41,7 @@ def detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
     return render(request, 'detail.html', {'post': post})
 
-#글 수정
+# 글 수정
 @login_required(login_url='login')
 def update(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -66,47 +69,8 @@ def update(request, pk):
 
     return render(request, 'update.html', {'post': post})
 
-# 회원가입
-def signup(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        email = request.POST.get('email')
 
-        user = User.objects.create_user(
-            username=username,
-            password=password,
-            email=email
-        )
-
-        login(request, user)
-        return redirect('home')
-
-    return render(request, 'signup.html')
-
-
-# 로그인
-def user_login(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-
-        user = authenticate(request, username=username, password=password)
-
-        if user:
-            login(request, user)
-            return redirect('home')
-
-    return render(request, 'login.html')
-
-
-# 로그아웃
-def user_logout(request):
-    logout(request)
-    return redirect('home')
-
-
-# 좋아요
+# 글 좋아요
 @login_required(login_url='login')
 def like_post(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -125,3 +89,29 @@ def add_comment(request, pk):
         if content:
             Comment.objects.create(post=post, author=request.user, content=content)
     return redirect('detail', pk=pk)
+
+# 대댓글
+@login_required(login_url='login')
+def add_comment(request, pk):
+    if request.method == 'POST':
+        post = get_object_or_404(Post, pk=pk)
+        content = request.POST.get('content')
+        parent_id = request.POST.get('parent_id') # 대댓글용 부모 ID
+        
+        if content:
+            if parent_id:
+                parent_obj = get_object_or_404(Comment, pk=parent_id)
+                Comment.objects.create(post=post, author=request.user, content=content, parent_comment=parent_obj)
+            else:
+                Comment.objects.create(post=post, author=request.user, content=content)
+    return redirect('detail', pk=pk)
+
+# 댓글 좋아요
+@login_required(login_url='login')
+def like_comment(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+    if request.user in comment.likes.all():
+        comment.likes.remove(request.user)
+    else:
+        comment.likes.add(request.user)
+    return redirect('detail', pk=comment.post.pk)

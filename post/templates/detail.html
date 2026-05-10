@@ -34,15 +34,37 @@
 <span>{{ post.likes.count }}명이 좋아합니다.</span>
 
 <hr>
-
 <!-- 댓글 목록 -->
 <h3>댓글</h3>
 <ul>
 {% for comment in post.comments.all %}
+    {% if not comment.parent_comment %} <!-- 부모 댓글만 출력 -->
     <li>
         <b>{{ comment.author.username }}</b>: {{ comment.content }}
         <small>({{ comment.created_at|date:"Y-m-d H:i" }})</small>
+        
+        <!-- 댓글 좋아요 -->
+        <a href="{% url 'like_comment' comment.pk %}">👍 {{ comment.likes.count }}</a>
+
+        <!-- 대댓글 작성 -->
+        <form action="{% url 'add_comment' post.pk %}" method="POST" style="display:inline;">
+            {% csrf_token %}
+            <input type="hidden" name="parent_id" value="{{ comment.pk }}">
+            <input type="text" name="content" placeholder="답글 입력" required>
+            <button type="submit">답글 등록</button>
+        </form>
+
+        <!-- 대댓글 목록 -->
+        <ul style="list-style:none;">
+        {% for reply in comment.replies.all %}
+            <li>
+                ㄴ <b>{{ reply.author.username }}</b>: {{ reply.content }}
+                <a href="{% url 'like_comment' reply.pk %}">👍 {{ reply.likes.count }}</a>
+            </li>
+        {% endfor %}
+        </ul>
     </li>
+    {% endif %}
 {% empty %}
     <p>아직 댓글이 없습니다.</p>
 {% endfor %}
