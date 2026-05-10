@@ -18,7 +18,7 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
-# 여러 이미지를 저장하기 위한 모델 (Post와 N:1 관계)
+# 여러 이미지를 저장 모델 (Post와 N:1 관계)
 class PostImage(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to='posts/', blank=True, null=True)
@@ -30,14 +30,15 @@ def post_image_delete(sender, instance, **kwargs):
         if os.path.isfile(instance.image.path):
             os.remove(instance.image.path)
 
-# [추가] 댓글 모델: Post와 1:N 관계
+#댓글 모델: Post와 1:N 관계
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-    # [대댓글 핵심] 자기 자신을 참조하는 parent 필드
+    #자기 자신을 참조하는 parent 필드
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
-
+    likes = models.ManyToManyField(User, related_name='comment_likes', blank=True)
+    
     def __str__(self):
         return f"{self.author.username}의 댓글"

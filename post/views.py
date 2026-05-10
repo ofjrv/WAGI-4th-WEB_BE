@@ -1,18 +1,22 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.db.models import Q
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Post, PostImage, Comment  # Comment 추가
+from .models import Post, PostImage, Comment
 
-# 계정 관련 필수 임포트
-from django.contrib.auth import login as auth_login, logout as auth_logout, authenticate
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-
-# 1. 목록 (누구나)
+#목록
 def home(request):
-    posts = Post.objects.all().order_by('-created_at')
-    return render(request, 'list.html', {'posts': posts})
+    query = request.GET.get('q', '') 
+    
+    if query:
+        posts = Post.objects.filter(title__icontains=query).order_by('-created_at')
+    else:
+        posts = Post.objects.all().order_by('-created_at')
+        
+    return render(request, 'list.html', {'posts': posts, 'query': query})
 
-# 2. 글 쓰기 (로그인 필수)
+#글쓰기 
 @login_required(login_url='login')
 def write(request):
     if request.method == 'POST':
@@ -28,12 +32,11 @@ def write(request):
         return redirect('home')
     return render(request, 'write.html')
 
-# 3. 상세 보기 (누구나)
 def detail(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
     return render(request, 'detail.html', {'post': post})
 
-# 4. 수정 (사진 삭제 + 추가 기능 구현)
+#글수정
 @login_required(login_url='login')
 def update(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
@@ -62,7 +65,7 @@ def update(request, post_id):
     
     return render(request, 'update.html', {'post': post})
 
-# 5. 삭제 (로그인 필수 + 본인 확인)
+#글삭제
 @login_required(login_url='login')
 def delete(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
@@ -72,19 +75,41 @@ def delete(request, post_id):
     post.delete()
     return redirect('home')
 
-# --- 5주차 추가 기능 (좋아요 / 댓글) ---
-
-# 6. 좋아요 토글 (M:N 관계 활용)
+#좋아요 (M:N 관계)
 @login_required(login_url='login')
 def post_like(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
-    if request.user in post.likes.all():
-        post.likes.remove(request.user) # 이미 눌렀다면 취소
+    user = request.user
+    
+    if user in post.likes.all():
+        post.likes.remove(user)
+        is_liked = False
     else:
-        post.likes.add(request.user)    # 안 눌렀다면 추가
-    return redirect('detail', post_id=post_id)
+        post.likes.add(user)
+        is_liked = True
+        
+    return JsonResponse({
+        'is_liked': is_liked,
+        'like_count': post.likes.count()
+    })
 
-# 7. 댓글 작성 (1:N 관계 활용)
+@login_required(login_url='login') 
+def comment_like(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+    
+    if request.user in comment.likes.all():
+        comment.likes.remove(request.user)
+        is_liked = False 
+    else:
+        comment.likes.add(request.user)    
+        is_liked = True  
+        
+    return JsonResponse({
+        'is_liked': is_liked,
+        'like_count': comment.likes.count()
+    })
+
+#댓글작성 (1:N 관계)
 @login_required(login_url='login')
 def comment_write(request, post_id):
     if request.method == 'POST':
@@ -100,7 +125,7 @@ def comment_write(request, post_id):
             
     return redirect('detail', post_id=post_id)
 
-# 8. 댓글 삭제 (본인 확인)
+#댓글삭제
 @login_required(login_url='login')
 def comment_delete(request, comment_id):
     comment = get_object_or_404(Comment, pk=comment_id)
@@ -110,30 +135,3 @@ def comment_delete(request, comment_id):
     else:
         messages.error(request, "본인 댓글만 삭제 가능합니다.")
     return redirect('detail', post_id=post_id)
-
-# --- 기존 계정 관리 함수 ---
-def signup(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            auth_login(request, user)
-            return redirect('home')
-    else:
-        form = UserCreationForm()
-    return render(request, 'signup.html', {'form': form})
-
-def login_view(request):
-    if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            auth_login(request, user)
-            return redirect('home')
-    else:
-        form = AuthenticationForm()
-    return render(request, 'login.html', {'form': form})
-
-def logout_view(request):
-    auth_logout(request)
-    return redirect('home')

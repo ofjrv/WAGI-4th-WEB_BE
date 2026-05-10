@@ -6,7 +6,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('', include('post.urls')),  # 모든 기능(로그인 포함)을 post 앱의 urls로 넘김
+    path('', include('post.urls')),
+    path('user/', include('user.urls')),
 ]
 
 if settings.DEBUG:
