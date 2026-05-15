@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
+from django.db.models import Q
 from .models import Post, Photo, Comment, Reply
 from .forms import PostForm, CommentForm, ReplyForm
 
@@ -22,11 +23,23 @@ def write(request):
 
 def list(request):
     query = request.GET.get('q', '')
+    search_type = request.GET.get('type', '전체')
+
     if query:
-        posts = Post.objects.filter(title__icontains=query).order_by('-created_at')
+        keywords = [k.strip() for k in query.replace(',', ' ').split() if k.strip()]
+        q_obj = Q()
+        for keyword in keywords:
+            if search_type == '제목':
+                q_obj |= Q(title__icontains=keyword)
+            elif search_type == '내용':
+                q_obj |= Q(content__icontains=keyword)
+            else:
+                q_obj |= Q(title__icontains=keyword) | Q(content__icontains=keyword)
+
+        posts = Post.objects.filter(q_obj).distinct().order_by('-created_at')
     else:
         posts = Post.objects.all().order_by('-created_at')
-    return render(request, 'post/list.html', {'posts': posts, 'query': query})
+    return render(request, 'post/list.html', {'posts': posts, 'query': query, 'search_type' : search_type})
 
 def detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
