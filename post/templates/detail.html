@@ -22,6 +22,18 @@
 
 <h3>댓글</h3>
 
+<form method="POST" action="{% url 'create_comment' post.id %}">
+    {% csrf_token %}
+
+    <textarea name="content"></textarea>
+
+    <button type="submit">
+        댓글 작성
+    </button>
+</form>
+
+<hr>
+
 {% for comment in comments %}
     <p>
         <strong>{{ comment.author.username }}</strong>
@@ -61,4 +73,3 @@
         </button>
     </form>
 {% endfor %}
-

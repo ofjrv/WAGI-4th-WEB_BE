@@ -17,6 +17,39 @@
 
 <hr>
 
+
+<form method="GET">
+
+    <select name="type">
+        <option value="all">전체</option>
+
+        <option value="title"
+            {% if search_type == 'title' %}
+                selected
+            {% endif %}
+        >
+            제목
+        </option>
+
+        <option value="content"
+            {% if search_type == 'content' %}
+                selected
+            {% endif %}
+        >
+            내용
+        </option>
+    </select>
+
+    <input type="text" name="q" value="{{ query }}">
+
+    <button type="submit">
+        검색
+    </button>
+
+</form>
+
+<hr>
+
 <ul>
     {% for post in posts %}
         <li>
@@ -24,10 +57,5 @@
                 {{ post.title }}
             </a>
         </li>
-        {% endfor %}
+    {% endfor %}
 </ul>
-
-<form method="GET">
-    <input type="text" name="q" value="{{ query }}">
-    <button type="submit">검색</button>
-</form>

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Post, Image, Comment, CommentLike
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
-
+from django.db.models import Q
 # Create your views here.
 @login_required
 def write(request):
@@ -29,16 +29,36 @@ def write(request):
 
 def home(request):
     query = request.GET.get('q', '')
+    search_type = request.GET.get('type', 'all')
+
+    posts = Post.objects.all().order_by('-id')
 
     if query:
-        posts = Post.objects.filter(title__icontains=query).order_by('-id')
-    else:
-        posts = Post.objects.all().order_by('-id')
+        words = query.replace(',', ' ').split()
+
+        q_objects = Q()
+
+        for word in words:
+
+            if search_type == 'title':
+                q_objects |= Q(title__icontains=word)
+
+            elif search_type == 'content':
+                q_objects |= Q(content__icontains=word)
+
+            else:
+                q_objects |= (
+                    Q(title__icontains=word) |
+                    Q(content__icontains=word)
+                )
+
+        posts = Post.objects.filter(q_objects).distinct().order_by('-id')
 
     return render(request, 'list.html', {
-        'posts' : posts,
-        'query' : query
-        })
+        'posts': posts,
+        'query': query,
+        'search_type': search_type
+    })
 
 def detail(request, post_id):
     post = Post.objects.get(id = post_id)
