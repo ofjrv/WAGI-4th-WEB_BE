@@ -1,3 +1,4 @@
+import re #
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 from django.http import JsonResponse
@@ -7,14 +8,41 @@ from .models import Post, PostImage, Comment
 
 #목록
 def home(request):
-    query = request.GET.get('q', '') 
+    query = request.GET.get('q', '').strip() 
+    search_type = request.GET.get('type', 'all')
     
     if query:
-        posts = Post.objects.filter(title__icontains=query).order_by('-created_at')
+        keywords = re.split(r'[\s,]+', query)
+        keywords = [word for word in keywords if word]
+        
+        query_filter = Q()
+        
+        if keywords:
+            first_word = keywords[0]
+            if search_type == 'title':
+                query_filter = Q(title__icontains=first_word)
+            elif search_type == 'content':
+                query_filter = Q(content__icontains=first_word)
+            else:
+                query_filter = Q(title__icontains=first_word) | Q(content__icontains=first_word)
+            
+            for word in keywords[1:]:
+                if search_type == 'title':
+                    query_filter |= Q(title__icontains=word)
+                elif search_type == 'content':
+                    query_filter |= Q(content__icontains=word)
+                else:  # 'all'
+                    query_filter |= (Q(title__icontains=word) | Q(content__icontains=word))
+            
+        posts = Post.objects.filter(query_filter).order_by('-created_at')
     else:
         posts = Post.objects.all().order_by('-created_at')
         
-    return render(request, 'list.html', {'posts': posts, 'query': query})
+    return render(request, 'list.html', {
+        'posts': posts, 
+        'query': query, 
+        'search_type': search_type
+    })
 
 #글쓰기 
 @login_required(login_url='login')
